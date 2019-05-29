@@ -13,7 +13,7 @@ if __name__ == '__main__':
     data = []
 
     for line in in_file:
-        data_txt = line.split()
+        data_txt = line.split(',')
         try:
             datal = [str(x) for x in data_txt]
             data.append(datal)
@@ -23,4 +23,7 @@ if __name__ == '__main__':
     in_file.close()
     
     #-------------Analyse des données GPS------------
-    
+    Liste_position=[]
+    for line in data:
+        if line[0]=='$GPGGA':
+            
