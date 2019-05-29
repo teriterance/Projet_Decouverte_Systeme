@@ -32,5 +32,5 @@ def lecturefichier():
             Ligne.append(line[9])
             Ligne.append('Nb satellites:')
             Ligne.append(line[7])
-    Liste_time_pos.append(Ligne)
-print(Liste_time_pos)
+            Liste_time_pos.append(Ligne)
+    print(Liste_time_pos)
