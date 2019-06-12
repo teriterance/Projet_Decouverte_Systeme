@@ -28,4 +28,5 @@ while i < 10:
     liste_abscisse.append(x)
     liste_ordonne.append(y)
     i+=1
-plt.plot()
+plt.plot(liste_abscisse, liste_ordonne)
+plt.show()
