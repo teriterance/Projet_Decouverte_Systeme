@@ -12,7 +12,7 @@ import numpy as np
 
 class Projection_Mercator():
     
-    def __init__(self,latitude, longitude, lambda0):
+    def __init__(self, lambda0):
         self.rayon_terre=6378.137#En km
         self.excentricite=0.0818192
         self.phi= 0
@@ -72,4 +72,5 @@ class Projection_Mercator():
         self.phi= latitude
         self.lambd= longitude
         return self.abscisse(), self.ordonne()
+
 
