@@ -57,13 +57,13 @@ class GPS(object):
     def convMinutetoDegreLat(self,latitude):
         sortie = 0
         sortie = sortie+ int(latitude[0:2])
-        sortie = sortie+ 0.0166667*float(latitude[2:8])
+        sortie = sortie+ (1/60)*float(latitude[2:8])
         return sortie
     
     def convMinutetoDegreLong(self, longitude):
         sortie = 0
         sortie = sortie+ int(longitude[0:3])
-        sortie = sortie+ 0.0166667*float(longitude[3:9])
+        sortie = sortie+ (1/60)*float(longitude[3:9])
         return sortie
 
     def acDonne(self):
