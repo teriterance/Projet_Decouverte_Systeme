@@ -15,6 +15,10 @@ class GPS(object):
         self.valeursMoyenne = 0
         self.nb_satellite = 0
         self.Liste_valeurs = [[],[],[]]# en ordre , l'altitude, la latitude et la longitude 
+    
+    def save(self)
+        l1=self.Liste_valeurs[0]
+        
 
     def retirerVal(self):
         self.Liste_valeurs[0].pop(0)
@@ -76,6 +80,10 @@ class GPS(object):
                 self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
                 self.nb_satellite = int(line[7])
                 self.nombreMesure = self.nombreMesure + 1
+            #elif line[6]!=0 and line[0]=='$GPRMC':#On regarde la ligne recommended minimum specific GPS/Transit data
+             #   self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+             #   self.nb_satellite = int(line[7])
+              #  self.nombreMesure = self.nombreMesure + 1
     
     def acDonneUnit(self):
         line = self.lectureSerie().split(',')
