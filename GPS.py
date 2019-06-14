@@ -1,6 +1,7 @@
 import time
 import serial
 import numpy as np
+import matplotlib.pyplot as plt
 
 class GPS(object):
     def __init__(self, adres_gps = '/dev/ttyUSB0', baudrate = 4800):
@@ -15,9 +16,8 @@ class GPS(object):
         self.valeursMoyenne = 0
         self.nb_satellite = 0
         self.Liste_valeurs = [[],[],[]]# en ordre , l'altitude, la latitude et la longitude 
-    
-    def save(self)
-        l1=self.Liste_valeurs[0]
+        self.f = open("mesuresave.txt", "a")
+        self.f2 = open("mesuresat.txt", "a")
         
 
     def retirerVal(self):
@@ -75,22 +75,76 @@ class GPS(object):
         while self.nombreMesure < 20:
             line = self.lectureSerie().split(',')
             print(self.dernierevaleur, self.nombreMesure, self.nb_satellite)
-            if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
-                line[2]
-                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
-                self.nb_satellite = int(line[7])
-                self.nombreMesure = self.nombreMesure + 1
+            if len(line) > 6:
+                if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
+                    line[2]
+                    self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+                    self.nb_satellite = int(line[7])
+                    self.nombreMesure = self.nombreMesure + 1
             #elif line[6]!=0 and line[0]=='$GPRMC':#On regarde la ligne recommended minimum specific GPS/Transit data
              #   self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
              #   self.nb_satellite = int(line[7])
               #  self.nombreMesure = self.nombreMesure + 1
     
+    def GPSGraphPrep(self,a):
+        self.nombreMesure = 0
+        GPSe=[]
+        GPSa=[]
+        GPSa_rad = []
+        while self.nombreMesure < 20:
+            line = self.lectureSerie().split(',')
+            if line[0]=='$GPGSV':
+                if line[4] == a:
+                    GPSe.append(5)
+                    GPSa.append(6)
+                if line[8] == a:
+                    GPSe.append(9)
+                    GPSa.append(10)
+                if line[12] == a:
+                    GPSe.append(13)
+                    GPSa.append(14)
+                if line[16] == a:
+                    GPSe.append(17)
+                    GPSa.append(18)
+                self.nombreMesure+=1
+        for i in GPSa:
+            GPSa_rad.append(float(i) * np.pi / 180.0)
+        return(GPSe,GPSa_rad)
+
+    def GraphGPS(self):
+        liste=range(30)
+        for i in liste:
+            liste_e, liste_a = self.GPSGraphPrep(i)
+            if liste_e==[]:
+                print("satellite ",i," non detecté")
+            else:
+                ax = plt.plot(polar=True)
+                ax.set_theta_zero_location('N')
+                ax.set_theta_direction(-1)
+                ax.set_rmax(90)
+                ax.grid(True)
+                ax.scatter(liste_a, liste_e, color='r', s=10, label=str(i))
+                plt.show()
+
+    def save(self):
+        line = self.lectureSerie()
+        l = line.split(',')
+        if len(l) > 6:
+            if l[0]=='$GPGSV':#On regarde la ligne contenant les infos sur position Sat
+                self.f2.write(line)
+            elif l[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
+                if l[6]!=0:
+                    self.f.write(line)
+
     def acDonneUnit(self):
         line = self.lectureSerie().split(',')
         print(self.dernierevaleur, self.nb_satellite)
-        if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
-            self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
-            self.nb_satellite = int(line[7])
+        if len(line) > 6:
+            print(line)
+            """On suprime les cas ou il n'y a rien entre les virgules qui nous donne une taille de ligne inferieure a 6"""
+            if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
+                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+                self.nb_satellite = int(line[7])
         return self.dernierevaleur, self.nb_satellite
     
     def lectureReel(self):
