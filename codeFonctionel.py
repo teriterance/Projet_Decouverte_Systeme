@@ -32,11 +32,11 @@ longitude = np.zeros((1,10))
 liste_abscisse=[]
 liste_ordonnee=[]
 """
-gps =  GPS()
+gps =  GPS("gstar")
 
 
 i=0
-while i <10000:
+while i <100000:
     [alti, lati, longi], nb_sat =gps.acDonneUnit()
     gps.save()
 #    altitude[0,i]=alti

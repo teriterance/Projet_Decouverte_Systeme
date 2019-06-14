@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class GPS(object):
-    def __init__(self, adres_gps = '/dev/ttyUSB0', baudrate = 4800):
+    def __init__(self, nom, adres_gps = '/dev/ttyUSB0', baudrate = 4800):
         '''La variable adres_gps est une adresse de prot serie'''
         self.serialPort = serial.Serial(adres_gps, baudrate, parity= serial.PARITY_EVEN, rtscts=1)
         self.nombreMesure = 0
@@ -16,8 +16,8 @@ class GPS(object):
         self.valeursMoyenne = 0
         self.nb_satellite = 0
         self.Liste_valeurs = [[],[],[]]# en ordre , l'altitude, la latitude et la longitude 
-        self.f = open("mesuresave.txt", "a")
-        self.f2 = open("mesuresat.txt", "a")
+        self.f = open("mesuresave"+nom+".txt", "a")
+        self.f2 = open("mesuresat"+nom+".txt", "a")
         
 
     def retirerVal(self):
@@ -129,7 +129,7 @@ class GPS(object):
     def save(self):
         line = self.lectureSerie()
         l = line.split(',')
-        if len(l) > 6:
+        if len(l) > 13:
             if l[0]=='$GPGSV':#On regarde la ligne contenant les infos sur position Sat
                 self.f2.write(line)
             elif l[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
@@ -139,7 +139,7 @@ class GPS(object):
     def acDonneUnit(self):
         line = self.lectureSerie().split(',')
         print(self.dernierevaleur, self.nb_satellite)
-        if len(line) > 6:
+        if len(line) > 13:
             print(line)
             """On suprime les cas ou il n'y a rien entre les virgules qui nous donne une taille de ligne inferieure a 6"""
             if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
