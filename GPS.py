@@ -41,9 +41,13 @@ class GPS(object):
 
 
     def lectureSerie(self): 
-        # fonction de lecture série
+        """fonction de lecture série, elle permet de retourner les trames NMEA"""
         return self.serialPort.readline().decode("ascii")# (auto)-rappelle la fonction dans 100ms
-
+    
+    
+    
+#---------------------------Méthodes servant à calculer les justesses, fidélité et precision des GPS -----------------
+    
     def calculJustesse(self, Valeur_vraie):
         #il calcule la justesse, il attend la valeur vraie, celle du proflex 
         self.moyene = [sum(self.Liste_valeurs[0] , 0.0) / len(self.Liste_valeurs[0]), sum(self.Liste_valeurs[1] , 0.0) / len(self.Liste_valeurs[1]),sum(self.Liste_valeurs[2] , 0.0) / len(self.Liste_valeurs[2])]
@@ -73,7 +77,10 @@ class GPS(object):
         sortie = sortie+ int(longitude[0:3])
         sortie = sortie+ (1/60)*float(longitude[3:9])
         return sortie
+    
 
+#--------------------On arrive aux méthodes générales rassemblant toutes les méthodes précédentes-----------------    
+    
     def acDonne(self):
         self.nombreMesure = 0
         while self.nombreMesure < 20:
@@ -89,6 +96,21 @@ class GPS(object):
              #   self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
              #   self.nb_satellite = int(line[7])
               #  self.nombreMesure = self.nombreMesure + 1
+    
+        def acDonneUnit(self):
+        line = self.lectureSerie().split(',')
+        print(self.dernierevaleur, self.nb_satellite)
+        if len(line) > 13:
+            print(line)
+            """On suprime les cas ou il n'y a rien entre les virgules qui nous donne une taille de ligne inferieure a 6"""
+            if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
+                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+                self.nb_satellite = int(line[7])
+        return self.dernierevaleur, self.nb_satellite   
+    
+    
+    
+    #----------------Méthodes permettant de tracer la constellationn des satellites ---------
     
     def GPSGraphPrep(self,a):
         self.nombreMesure = 0
@@ -130,6 +152,9 @@ class GPS(object):
                 ax.scatter(liste_a, liste_e, color='r', s=10, label=str(i))
                 plt.show()
 
+                
+#--------- Méthodes sauvegardant dans des fichiers textes les différentes trames NMEA------------
+                
     def save(self):
         line = self.lectureSerie()
         l = line.split(',')
@@ -140,16 +165,6 @@ class GPS(object):
                 if l[6]!=0:
                     self.f.write(line)
 
-    def acDonneUnit(self):
-        line = self.lectureSerie().split(',')
-        print(self.dernierevaleur, self.nb_satellite)
-        if len(line) > 13:
-            print(line)
-            """On suprime les cas ou il n'y a rien entre les virgules qui nous donne une taille de ligne inferieure a 6"""
-            if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
-                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
-                self.nb_satellite = int(line[7])
-        return self.dernierevaleur, self.nb_satellite
     
     def lectureReel(self):
         line = self.lectureSerie().split(',')
