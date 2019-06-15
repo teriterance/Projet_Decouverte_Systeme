@@ -113,11 +113,13 @@ class GPS(object):
     #----------------Méthodes permettant de tracer la constellationn des satellites ---------
     
     def GPSGraphPrep(self,a):
+        """"Méthode permettant de stocker les 20 élévations et azimuts d'un satellite
+        de numéro "a" au cour du temps"""
         self.nombreMesure = 0
         GPSe=[]
         GPSa=[]
         GPSa_rad = []
-        while self.nombreMesure < 20:
+        while self.nombreMesure < 20:# on enregistre que 20 mesures de position de satellites
             line = self.lectureSerie().split(',')
             if line[0]=='$GPGSV':
                 if line[4] == a:
@@ -138,7 +140,9 @@ class GPS(object):
         return(GPSe,GPSa_rad)
 
     def GraphGPS(self):
-        liste=range(30)
+        """"Méthode traçant les suivis au cours du temps des positions des 
+        satellites dans le ciel"""
+        liste=range(30) # On parcours tous les numéros de satellites  
         for i in liste:
             liste_e, liste_a = self.GPSGraphPrep(i)
             if liste_e==[]:
