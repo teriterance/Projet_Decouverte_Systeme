@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 
 class GPS(object):
     def __init__(self, nom, adres_gps = '/dev/ttyUSB0', baudrate = 4800):
-        '''La variable adres_gps est une adresse de prot serie'''
+        '''La variable adres_gps est une adresse de port serie'''
         self.serialPort = serial.Serial(adres_gps, baudrate, parity= serial.PARITY_EVEN, rtscts=1)
         self.nombreMesure = 0
         self.moyene = [0,0,0]
         self.precision = [0,0,0]
         self.fidelite = [0,0,0]
         self.e_justesse = [0,0,0]
-        self.dernierevaleur = [0, 0, 0]#les derniere valeur en altitude latitude longitude
+        self.dernierevaleur = [0, 0, 0]#les derniere valeur en altitude latitude longitude, 
+        # C'est une liste que l'on mets à jour à chaque fois dans nos méthodes
         self.valeursMoyenne = 0
         self.nb_satellite = 0
         self.Liste_valeurs = [[],[],[]]# en ordre , l'altitude, la latitude et la longitude 
@@ -21,6 +22,9 @@ class GPS(object):
         
 
     def retirerVal(self):
+        """Méthode permettant de retirer des valeurs de latitude, log et altitude
+        lorsque la taille de Liste_valeurs atteint sa taille maximale
+        On utilise cette méthode dans l'autre" méthode ajouterVal"""
         self.Liste_valeurs[0].pop(0)
         self.Liste_valeurs[1].pop(0)
         self.Liste_valeurs[2].pop(0)
