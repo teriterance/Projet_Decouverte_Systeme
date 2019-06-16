@@ -97,7 +97,9 @@ class GPS(object):
              #   self.nb_satellite = int(line[7])
               #  self.nombreMesure = self.nombreMesure + 1
     
-        def acDonneUnit(self):
+    def acDonneUnit(self):
+        """ méthode qui retourne la liste des dernières valeurs de longitude
+        latitude et altitude ainsi que le nombre de satellites en temps réels""""
         line = self.lectureSerie().split(',')
         print(self.dernierevaleur, self.nb_satellite)
         if len(line) > 13:
@@ -160,6 +162,9 @@ class GPS(object):
 #--------- Méthodes sauvegardant dans des fichiers textes les différentes trames NMEA------------
                 
     def save(self):
+        """Méthodes sauvegardant dans des fichiers textes les différentes trames NMEA
+        On stocke dans deux fichiers différents les trames concernant les positions des satellites
+        et les trames concernant les positions du GPS"""
         line = self.lectureSerie()
         l = line.split(',')
         if len(l) > 13:
