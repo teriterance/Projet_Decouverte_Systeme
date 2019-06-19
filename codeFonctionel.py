@@ -6,6 +6,7 @@ import pyproj
 from osgeo import osr
 from osgeo import ogr
 import gdal
+from affichagetempreel import Visualiseur
 
 #declaration des points de reference, 8000 et 9000
 valVrai_9000 = [139.4655, 48.418407975, 4.474412007]
@@ -17,65 +18,20 @@ def convLambert(longitude, latitude):
     wgs8 =  pyproj.Proj("+init=EPSG:4326")
     return pyproj.transform(wgs8,lam, longitude, latitude)
 
-gps = GPS("gstar")
-gps.lectureFichier('ue24_9000_20190614_100000.txt')
+#creation du gps et initialisation de son nom qui permet de definire le fichier a gerer
+def acFichier(file = 'ue24_9000_20190614_100000.txt'):
+    gps = GPS("gstar")
+    gps.lectureFichier('file')
+    af = Visualiseur('ensta_2015.jpg')
+    af.positionPix(gps.Liste_valeurs[1][:], gps.dernierevaleur[2][:])
 
-#on charge l'image
-x,y = convLambert(gps.Liste_valeurs[2][:], gps.Liste_valeurs[1][:])
-print(x,y)
-plt.scatter(x,y, marker='+')
-plt.show()
+def acDeplacement():
+    gps = GPS("gstar")
+    af = Visualiseur('ensta_2015.jpg')
+    while True:
+        gps.acDonneUnit()
+        af.positionPix(gps.dernierevaleur[1], gps.dernierevaleur[2])
 
-im = gdal.Open('ensta_2015.jpg')
-nx = im.RasterXSize
-ny = im.RasterYSize
-nb = im.RasterCount
-image = np.zeros((ny,nx,nb))
-image[:,:,0]=im.GetRasterBand(1).ReadAsArray()*255
-image[:,:,1]=im.GetRasterBand(2).ReadAsArray()*255
-image[:,:,2]=im.GetRasterBand(3).ReadAsArray()*255
-plt.figure()
-plt.xlim([500,1000])
-plt.ylim([1200,800])
-geo = im.GetGeoTransform()
-origine = (geo[0], geo[3])  # origine de l'image 
-print(origine)
-taille_pixel = (geo[1], geo[5])
-xpix = int((x[0] - origine[0]) / taille_pixel[0])
-ypix = int((y[0] - origine[1]) / taille_pixel[1])
-print(xpix, ypix)
-plt.scatter(xpix, ypix)
-image[0:100,0:100,:] = 0
-plt.imshow(image)
-plt.show()
-plt.scatter(xpix+taille_pixel[0], ypix+taille_pixel[1])
-plt.show()
-
-"""
-gps.acDonne()
-#pour le point 9000
-print(gps.calculFidelite(), "fidelite")
-print(gps.calculPrecision(valVrai_9000), "Precision")
-print(gps.calculJustesse(valVrai_9000), "justesse")
-projection  = Projection_Mercator(4.474412007)
-i = 0
-altitude = np.zeros((1,10))
-latitude = np.zeros((1,10))
-longitude = np.zeros((1,10))
-liste_abscisse=[]
-liste_ordonnee=[]
-gps =  GPS("gstar")
-spacialRef = osr.SpatialReference()
-spacialRef.ImportFromEPSG(2154)
-i=0
-while i <100000:
-    [alti, lati, longi], nb_sat =gps.acDonneUnit()
-    gps.save()
-#    altitude[0,i]=alti
-#    latitude[0,i]=lati
-#    longi[0,i]=longi
-#    x,y=projection.calcul(lati, longi)
-#    liste_abscisse.append(x)
-#    liste_ordonne.append(y)
-    i+=1
-    """
+if __name__ == "__main__":
+    acDeplacement()
+    

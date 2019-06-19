@@ -6,9 +6,11 @@ from osgeo import osr
 from osgeo import ogr
 import gdal
 
-class visualiseur():
-    def __init(self, image):
+class Visualiseur:
+    def __init__(self, image):
         """cette fonciton attend en entree l'image sur la quel sera representee le graphique"""
+        plt.figure(1)
+        plt.ion()
         self.im = gdal.Open(image)
         nx = self.im.RasterXSize
         ny = self.im.RasterYSize
@@ -20,6 +22,9 @@ class visualiseur():
         geo = self.im.GetGeoTransform()
         self.origine = (geo[0], geo[3])  # origine de l'image 
         self.limitesXY = [[500,1000], [1200,800]]
+        plt.xlim(self.limitesXY[0])
+        plt.ylim(self.limitesXY[1])
+        plt.imshow(self.image)
     
     def convLambert(self, longitude, latitude):
         lam =  pyproj.Proj("+init=EPSG:2154")
@@ -28,16 +33,33 @@ class visualiseur():
 
     def affichepointsurimage(self, xpix, ypix):
         """on ajoute sur l'image"""
-        plt.scatter(xpix, ypix)
+        print(xpix, ypix)
+        plt.scatter(xpix,  ypix)
+        plt.show()
+        plt.pause(0.5)
 
     def positionPix(self, lat, lon):
-    """On obtient ici la position d'un pixel sur l'image"""
+        """On obtient ici la position d'un pixel sur l'image"""
         x, y = self.convLambert(lon, lat)
         geo = self.im.GetGeoTransform()
         origine = (geo[0], geo[3])  # origine de l'image 
         taille_pixel = (geo[1], geo[5])
-        xpix = int((x[0] - origine[0]) / taille_pixel[0])
-        ypix = int((y[0] - origine[1]) / taille_pixel[1])
-        self.image[xpix, ypix, :] = 255
+        print(x,y)
+        xpix = int((x - origine[0]) / taille_pixel[0])
+        ypix = int((y - origine[1]) / taille_pixel[1])
+        self.affichepointsurimage(xpix, ypix)
 
-    
+    def positionPixliste(self, listeLat, listeLon):
+        """On obtient ici l'affichage d'un certain nombre de lieux sur l'image"""
+        geo = self.im.GetGeoTransform()
+        origine = (geo[0], geo[3])  # origine de l'image 
+        taille_pixel = (geo[1], geo[5])
+        for i in range(len(lat)):
+            for i in range(listeLat):
+                x, y = self.convLambert(lon, lat)
+                xpix = int((x - origine[0]) / taille_pixel[0])
+                ypix = int((y - origine[1]) / taille_pixel[1])
+                # pause de 0.5 s
+                plt.pause(0.5)
+                plt.scatter(xpix, ypix,'+')
+        
