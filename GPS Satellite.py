@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-f = open("mesuresatgstar - Copie.txt", "r+")
+f = open("tramesGPSREF", "r+")
 k = f.readlines()
 k2=[]
 for i in k:
@@ -9,7 +9,6 @@ for i in k:
     if i2[0]=='$GPGSV':
         k2.append(i2)
 
-print(k2[0][4])
 
 GPSe=[]
 GPSa=[]
@@ -26,7 +25,7 @@ for k in range(100):
     GPSai = []
     GPSai_rad = []
     for i in k2:
-        if len(i)>16:
+        if len(i)>17:
             if int(i[4]) == k:
                 GPSei.append(i[5])
                 GPSai.append(i[6])
@@ -51,7 +50,7 @@ for k in range(100):
                 if len(GPSei)>2:
                     if GPSei[-1]==GPSei[-2] and GPSai[-1]==GPSai[-2]:
                         GPSei.pop(-1),GPSai.pop(-1)
-        elif len(i)>12:
+        elif len(i)>13:
             if int(i[4]) == k:
                 GPSei.append(i[5])
                 GPSai.append(i[6])
@@ -70,7 +69,7 @@ for k in range(100):
                 if len(GPSei)>2:
                     if GPSei[-1]==GPSei[-2] and GPSai[-1]==GPSai[-2]:
                         GPSei.pop(-1),GPSai.pop(-1)
-        elif len(i) > 8:
+        elif len(i) > 9:
             if int(i[4]) == k:
                 GPSei.append(i[5])
                 GPSai.append(i[6])

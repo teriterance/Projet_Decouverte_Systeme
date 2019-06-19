@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 class GPS(object):
     def __init__(self, nom, adres_gps = '/dev/ttyUSB0', baudrate = 4800):
         '''La variable adres_gps est une adresse de port serie'''
-        self.serialPort = serial.Serial(adres_gps, baudrate, parity= serial.PARITY_EVEN, rtscts=1)
+        #self.serialPort = serial.Serial(adres_gps, baudrate, parity= serial.PARITY_EVEN, rtscts=1)
         self.nombreMesure = 0
         self.moyene = [0,0,0]
         self.precision = [0,0,0]
@@ -49,7 +49,6 @@ class GPS(object):
         self.Liste_valeurs[1].append(latitude)
         self.Liste_valeurs[2].append(longitude)
 
-
     def lectureSerie(self): 
         """fonction de lecture série, elle permet de retourner les trames NMEA"""
         return self.serialPort.readline().decode("ascii")# (auto)-rappelle la fonction dans 100ms 
@@ -91,7 +90,6 @@ class GPS(object):
         sortie = sortie+ int(longitude[0:3])
         sortie = sortie+ (1/60)*float(longitude[3:9])
         return e*sortie
-    
 
 #--------------------On arrive aux méthodes générales rassemblant toutes les méthodes précédentes-----------------    
     

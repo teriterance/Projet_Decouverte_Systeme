@@ -9,8 +9,8 @@ import gdal
 from affichagetempreel import Visualiseur
 
 #declaration des points de reference, 8000 et 9000
-valVrai_9000 = [139.4655, 48.418407975, 4.474412007]
-valVrai_8000 = [139.460, 48.418361635, 4.474421519]
+valVrai_9000 = [88.842, 48.418407975, 4.474412007]
+valVrai_8000 = [88.837, 48.418361635, 4.474421519]
 
 #on effectue la conversion des donnees GPS vers des donnees wgs8
 def convLambert(longitude, latitude):
@@ -33,5 +33,18 @@ def acDeplacement():
         gps.acDonneUnit()
         af.positionPix(gps.dernierevaleur[1], gps.dernierevaleur[2])
 
+#permet la mesure d'erreur 
+def mesurErreurGstar():
+    gps = GPS("gstarerror")
+    gps.lectureFichier('mesuresavegstar.txt')
+    print('Pour le GSTAR la fidelite est:',gps.calculFidelite(),' la justesse est:',gps.calculJustesse(valVrai_9000), ' la precision:', gps.calculPrecision(valVrai_9000))
+
+#permet la mesure de l'erreur
+def mesuErreurRef():
+    gps = GPS("Gpsgerf")
+    gps.lectureFichier('tramesGPSREF')
+    print('Pour le GPS de reference la fidelite est:',gps.calculFidelite(),' la justesse est:',gps.calculJustesse(valVrai_9000), ' la precision:', gps.calculPrecision(valVrai_9000))
+
 if __name__ == "__main__":
-    acDeplacement()
+    #inserez ici le code a faire marcher
+    mesuErreurRef()
