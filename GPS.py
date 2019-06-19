@@ -16,10 +16,20 @@ class GPS(object):
         # C'est une liste que l'on mets à jour à chaque fois dans nos méthodes
         self.valeursMoyenne = 0
         self.nb_satellite = 0
+        self.listeValFichier = [[],[],[]]
         self.Liste_valeurs = [[],[],[]]# en ordre , l'altitude, la latitude et la longitude 
         self.f = open("mesuresave"+nom+".txt", "a")
         self.f2 = open("mesuresat"+nom+".txt", "a")
         
+    def lectureFichier(self, file):
+        fichier = open(file, "r")
+        for line in fichier.readlines():
+            line = line.split(',')
+            print(str(line))
+            if len(line) > 6:
+                if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
+                    self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2], line[3]), self.convMinutetoDegreLong(line[4], line[5]))
+                    self.nb_satellite = int(line[7])
 
     def retirerVal(self):
         """Méthode permettant de retirer des valeurs de latitude, log et altitude
@@ -42,9 +52,7 @@ class GPS(object):
 
     def lectureSerie(self): 
         """fonction de lecture série, elle permet de retourner les trames NMEA"""
-        return self.serialPort.readline().decode("ascii")# (auto)-rappelle la fonction dans 100ms
-    
-    
+        return self.serialPort.readline().decode("ascii")# (auto)-rappelle la fonction dans 100ms 
     
 #---------------------------Méthodes servant à calculer les justesses, fidélité et precision des GPS -----------------
     
@@ -66,17 +74,23 @@ class GPS(object):
         self.e_precision=[((self.e_justesse[0]**2)+(self.e_fidelite[0])**2)**(1/2), ((self.e_justesse[1]**2)+(self.e_fidelite[1])**2)**(1/2), ((self.e_justesse[2]**2)+(self.e_fidelite[2])**2)**(1/2)] 
         return self.e_precision
 
-    def convMinutetoDegreLat(self,latitude):
+    def convMinutetoDegreLat(self,latitude, orien):
+        e = 1    
+        if orien == "S":
+            e = -1
         sortie = 0
         sortie = sortie+ int(latitude[0:2])
         sortie = sortie+ (1/60)*float(latitude[2:8])
-        return sortie
+        return sortie*e
     
-    def convMinutetoDegreLong(self, longitude):
+    def convMinutetoDegreLong(self, longitude, orien):
+        e = 1    
+        if orien == "W":
+            e = -1
         sortie = 0
         sortie = sortie+ int(longitude[0:3])
         sortie = sortie+ (1/60)*float(longitude[3:9])
-        return sortie
+        return e*sortie
     
 
 #--------------------On arrive aux méthodes générales rassemblant toutes les méthodes précédentes-----------------    
@@ -89,7 +103,7 @@ class GPS(object):
             if len(line) > 6:
                 if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
                     line[2]
-                    self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+                    self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2], line[3]), self.convMinutetoDegreLong(line[4], line[5]))
                     self.nb_satellite = int(line[7])
                     self.nombreMesure = self.nombreMesure + 1
             #elif line[6]!=0 and line[0]=='$GPRMC':#On regarde la ligne recommended minimum specific GPS/Transit data
@@ -99,18 +113,16 @@ class GPS(object):
     
     def acDonneUnit(self):
         """ méthode qui retourne la liste des dernières valeurs de longitude
-        latitude et altitude ainsi que le nombre de satellites en temps réels""""
+        latitude et altitude ainsi que le nombre de satellites en temps réels"""
         line = self.lectureSerie().split(',')
         print(self.dernierevaleur, self.nb_satellite)
         if len(line) > 13:
             print(line)
             """On suprime les cas ou il n'y a rien entre les virgules qui nous donne une taille de ligne inferieure a 6"""
             if  line[6]!=0 and line[0]=='$GPGGA':#On regarde la ligne contenant ttes les infos utiles
-                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2]), self.convMinutetoDegreLong(line[4]))
+                self.ajouterVal(float(line[9]), self.convMinutetoDegreLat(line[2], line[3]), self.convMinutetoDegreLong(line[4], line[5]))
                 self.nb_satellite = int(line[7])
         return self.dernierevaleur, self.nb_satellite   
-    
-    
     
     #----------------Méthodes permettant de tracer la constellationn des satellites ---------
     
