@@ -27,6 +27,7 @@ class Visualiseur:
         plt.imshow(self.image)
     
     def convLambert(self, longitude, latitude):
+        """"Projection via lambert"""
         lam =  pyproj.Proj("+init=EPSG:2154")
         wgs8 =  pyproj.Proj("+init=EPSG:4326")
         return pyproj.transform(wgs8,lam, longitude, latitude)
@@ -34,9 +35,9 @@ class Visualiseur:
     def affichepointsurimage(self, xpix, ypix):
         """on ajoute sur l'image"""
         print(xpix, ypix)
-        plt.scatter(xpix,  ypix)
+        plt.scatter(xpix,  ypix, s= 1,c='r')
         plt.show()
-        plt.pause(0.5)
+        plt.pause(0.01)
 
     def positionPix(self, lat, lon):
         """On obtient ici la position d'un pixel sur l'image"""
@@ -61,5 +62,4 @@ class Visualiseur:
                 ypix = int((y - origine[1]) / taille_pixel[1])
                 # pause de 0.5 s
                 plt.pause(0.5)
-                plt.scatter(xpix, ypix,'+')
-        
+                plt.scatter(xpix, ypix,s = 1, c ='r')

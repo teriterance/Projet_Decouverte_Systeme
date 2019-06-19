@@ -20,11 +20,12 @@ def convLambert(longitude, latitude):
 
 #creation du gps et initialisation de son nom qui permet de definire le fichier a gerer
 def acFichier(file = 'ue24_9000_20190614_100000.txt'):
-    gps = GPS("gstar")
+    gps = GPS("gstar1")
     gps.lectureFichier('file')
     af = Visualiseur('ensta_2015.jpg')
     af.positionPix(gps.Liste_valeurs[1][:], gps.dernierevaleur[2][:])
 
+#permet l'acquisition des donnee en mouvement
 def acDeplacement():
     gps = GPS("gstar")
     af = Visualiseur('ensta_2015.jpg')
@@ -34,4 +35,3 @@ def acDeplacement():
 
 if __name__ == "__main__":
     acDeplacement()
-    
